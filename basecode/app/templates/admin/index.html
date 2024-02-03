@@ -1,0 +1,21 @@
+{% extends 'admin/master.html' %}
+
+
+{% block access_control %}
+    <a href="/" class="btn btn-primary">Back to App</a>
+    <a id="logout" class="btn btn-primary">Logout</a>
+{% endblock %}
+
+{% block body %}
+<div class="card" style="width: 18rem;">
+  
+  <div class="card-body">
+    <h5 class="card-title">Admin Panel</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <a href="http://localhost:5173/" class="btn btn-primary">Back to App</a>
+    <a id="logout" class="btn btn-primary">Logout</a>
+  </div>
+</div>
+
+<script src="{{url_for('static', filename='assets/js/script-logout.js')}}"></script>
+{% endblock %}
