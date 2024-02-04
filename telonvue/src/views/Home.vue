@@ -3,49 +3,39 @@
         <Form class="flex flex-col bg-gray rounded-lg my-10 justify-center">
 
             <div class="flex flex-col p-5">
-                <TextArea label="Tweet" v-model="tweet" />{{ tweet }}
+                <TextArea label="Tweet" v-model="content" />{{content}}
                 <div class="flex justify-end">
-                        <Button name="Post" @handle-click="postContent"/>
+                        <Button name="Post" @click="postContent"/>
                     <div class="ml-5">
-                        <Button name="Upload Photo" @handle-click="toggleModal" />
+                        <Button name="Upload Photo" @click="toggleModal" />
                     </div>
                 </div>
             </div>
 
         </Form>
 
-        <Card v-for="item in data" :key="item.id" :content="item.content" :user="item.user" />
+        <Card v-for="item in tweets.item.data" :key="item.id" :content="item.content" :user="item.user_id" :imgPath="item.image_path" :imgName="item.image_name" />
 
-        <!-- Modal Lama -->
-        <!-- <div class="modal" v-if="showModal">
-            <div class="modal-container">
-                <div class="flex-modal">
-                    <label>Upload Foto</label>
-                    <input type="file" id="foto" class="upload_foto"/>
-                </div>
-                <div class="flex-modal">
-                    <textarea row="5"></textarea>
-                </div>
-                <div class="button">
-                    <div class="button-class">
-                        <button>Tweet</button>
+        <Teleport to="body">
+            <Modal @toggle-modal="toggleModal" :show-modal="showModal">
+                <Form>
+                    <label for="uploadBtn">Upload</label>
+                    <label for="uploadFile" class="flex border-2 border-green-500 justify-center p-5 rounded-md">
+                        <InputFile button-text="Upload" id="uploadBtn" v-model="formData.file" />
+                    </label>
+                    <TextArea id="textarea-input" label="Tweet" v-model="formData.content" row="5" />
+                    <div class="flex flex-row space-x-3">
+                        <Button type="submit" name="Submit" @click="handleUploadFile" />
+                        <Button type="button" name="Close" @click="toggleModal" />
                     </div>
-                    <div class="button-class">
-                        <button @click="toggleModal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
+                </Form>
+            </Modal>
+        </Teleport>
 
-        <!-- Modal Baru -->
-        <div v-if="showModal">
-            <Modal :is-open ="showModal"
-            @close-modal="toggleModal"/>
-        </div>
-
+        
         <div>
             <button @click="prevPages" v-if="page!==1">Previous</button>
-            <button @click="nextPages" v-if="page!==total_page">Next</button>
+            <button @click="nextPages" v-if="page!==tweets.total_page">Next</button>
         </div>
 
     </div>
@@ -58,24 +48,35 @@ import Card from '@/components/UI/Card.vue';
 import Button from '@/components/UI/Button.vue';
 import TextArea from '@/components/UI/CustomeTextarea.vue'
 import Modal from '@/components/UI/Modal.vue';
-import {ref, onMounted, watch} from 'vue'
+import {ref, onMounted, reactive, watch} from 'vue'
 import { useAxios } from '../composable/useAxios';
-import { useAuthStore } from '@/stores/authStore.js'
-import { storeToRefs } from 'pinia'
+import InputFile from '@/components/UI/InputFile.vue'
+
+
 
 const {tryFetch, tryPost, success, tryUpload} = useAxios()
 
-const stores = useAuthStore()
+
 // dekonstruksi state dan getters. membutuhkan satu fungsi dari pinia yaitu storeToRefs
 
 // storeToRefs digunakan untuk memberitahu si VUE bahawa accessToken etc tsb merupakan sebuah state, bukan props. 
 // Dan untuk menjaga sifat reactive dari vue tersebut pada instance accessToken, refreshToken, dan isAuthenticated
 
-const { accessToken, refreshToken, isAuthenticated } = storeToRefs(stores)
+
+const formData = reactive({
+    content:'',
+    file:''
+})
+
 
 const page = ref(1)
-const per_page = ref(2)
-const total_page = ref()
+const tweets = reactive({
+    item:[],
+    per_page:2,
+    total_page:1,
+    total_items:0,
+})
+
 const prevPages = ()=>{
     page.value--
 }
@@ -85,26 +86,31 @@ const nextPages = ()=>{
 }
 
 watch(page, (newPage)=>{
-    handleFetching(newPage, per_page)
+    handleFetching(newPage, tweets.per_page)
 })
-const tweet = ref('')
+const content = ref('')
 const showModal = ref(false)
 
-const data = ref([])
 
-const handleFetching = async (page, per_page)=>{
-    const result = await tryFetch('/api/tweets', page, per_page) 
-    data.value = result.data.data
-    total_page.value = result.data.total_page
-    console.log(result)
+
+const handleFetching = async ()=>{
+    const result = await tryFetch('/api/tweets', page.value,tweets.per_page) 
+    tweets.item = result.data
+    page.value = result.data.page
+    tweets.total_page = result.data.total_page
+    tweets.total_items = result.data.total_item
+    
 }
 
 const postContent = async ()=>{
-    const result = await tryPost(import.meta.env.VITE_API_BASEURL + 'api/tweets/', accessToken.value)
-    if(result.response === 200){
+    await tryPost('/api/tweets/', {"content": content.value})
+    if(success.value = true){
         handleFetching()
+
     }
 }
+
+
 
 const toggleModal = () =>{
     showModal.value = !showModal.value
@@ -114,5 +120,14 @@ onMounted(()=>{
     //digunakan agar ketika home got loaded, langsung fetching data
     handleFetching()
 })
+
+const handleUploadFile = async () => {
+    await tryUpload("/api/tweets/", formData)
+    if (success.value == true) {
+        handleFetching()
+        toggleModal()
+    }
+
+}
 
 </script>

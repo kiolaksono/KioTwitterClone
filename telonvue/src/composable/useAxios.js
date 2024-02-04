@@ -20,7 +20,7 @@ export function useAxios(){
                     per_page: per_page
                 }
             })
-
+            data.value = response.data.data
             return response
         }catch(e){
             error.value = e
@@ -28,17 +28,16 @@ export function useAxios(){
         }
     }
 
-    const tryPost = async (url) =>{
+    const tryPost = async (url, formData) =>{
         try{
             const response = await axiosInstance.post(url, formData, {
                 headers:{
-                    Authorization: `Bearer ${accessToken}`,
+                   
                     'Content-Type' : 'application/json'
                 }
             })
             success.value = response.data.success
             loading.value = false
-            return response
         }catch(e){
             
             error.value = e
@@ -50,11 +49,11 @@ export function useAxios(){
         try{
             const response = await axiosInstance.post(url, formData, {
                 headers:{
-                    // Authorization: `Bearer ${accessToken}`
                     'Content-Type' : 'multipart/form-data'
                 }
             })
-            return response
+            success.value = response.data.success
+            loading.value = false
         }catch(e){
             
         }

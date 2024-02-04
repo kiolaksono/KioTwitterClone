@@ -6,7 +6,7 @@
                 <Input id-input="password" input-type="password" label-name="Password" v-model="userDataLogin.password"/>
                 <p v-if="validationError.password" class="text-red-500">{{  validationError.password }}</p>
                 <div class="flex justify-end">
-                        <Button name="Login" btnType="submit" @handle-click="handleLogin"/>
+                        <Button name="Login" btnType="submit" @click="handleLogin"/>
                 </div>
                 {{ userDataLogin.username }} - {{ userDataLogin.password }}
         </Form>
