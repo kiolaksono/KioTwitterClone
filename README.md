@@ -64,9 +64,11 @@ Aplikasi ini memiliki beberapa fitur seperti:
    <img width="1413" alt="image" src="https://github.com/kiolaksono/KioTwitterClone/assets/103632483/70c0fb00-1392-4d08-ad09-c429f9740a39">
 
 4. Kolom Upload Foto
+   
    <img width="326" alt="image" src="https://github.com/kiolaksono/KioTwitterClone/assets/103632483/71759b02-cffb-4005-8361-1211f34e6f4e">
 
-5. Hasil Upload Foto
+6. Hasil Upload Foto
+   
    <img width="724" alt="image" src="https://github.com/kiolaksono/KioTwitterClone/assets/103632483/c35a8cff-425e-4608-b2b3-47180165f118">
 
 
