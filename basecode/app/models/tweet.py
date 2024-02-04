@@ -7,7 +7,7 @@ class Tweets(db.Model):
     image_name = db.Column(db.String(128))
     image_path = db.Column(db.String(1000)) 
     
-    user = db.relationship('Users', back_populates='tweet')
+    user = db.relationship('Users',  backref=db.backref('tweets', lazy=True))
 
 
     def serialize(self): 
